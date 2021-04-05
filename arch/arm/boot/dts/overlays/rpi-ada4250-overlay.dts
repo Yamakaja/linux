@@ -13,6 +13,19 @@
 	};
 
 	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			avdd: fixedregulator@0 {
+				compatible = "regulator-fixed";
+				regulator-name = "avdd";
+				regulator-min-microvolt = <5000000>;
+				regulator-max-microvolt = <5000000>;
+				regulator-boot-on;
+			};
+		};
+	};
+
+	fragment@2 {
 		target = <&spi0>;
 
 		__overlay__{
@@ -24,6 +37,7 @@
 				compatible = "adi,ada4250";
 				reg = <0>;
 				spi-max-frequency = <1000000>;
+				avdd-supply = <&avdd>;
 			};
 		};
 	};

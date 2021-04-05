@@ -9,6 +9,7 @@
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/spi/spi.h>
+#include <linux/regulator/consumer.h>
 #include <linux/iio/iio.h>
 #include <linux/regmap.h>
 #include <linux/bitfield.h>
@@ -79,8 +80,8 @@ struct ada4250 {
 	struct regmap		*regmap;
 	enum ada4250_bias	bias;
 	enum ada4250_gain	gain;
+	struct regulator	*reg;
 	int			offset_uv;
-	int			avdd_v;
 };
 
 static const struct regmap_config ada4250_regmap_config = {
@@ -96,14 +97,17 @@ static int ada4250_set_offset(struct iio_dev *indio_dev,
 {
 	struct ada4250 *dev = iio_priv(indio_dev);
 
-	int i, ret, x[8], vlsb, max_vos, min_vos;
+	int i, ret, x[8], vlsb, max_vos, min_vos, voltage_v;
 	u8 offset_raw;
 	enum ada4250_offset_range range;
 
 	if (dev->bias == ADA4250_BIAS_DISABLE)
 		return -EINVAL;
 
-	x[0] = (dev->bias == ADA4250_BIAS_AVDD) ? dev->avdd_v : 5;
+	voltage_v = regulator_get_voltage(dev->reg);
+	voltage_v = DIV_ROUND_CLOSEST(voltage_v, 1000000);
+
+	x[0] = (dev->bias == ADA4250_BIAS_AVDD) ? voltage_v : 5;
 
 	x[1] = 126 * (x[0] - 1);
 	x[2] = x[1] * 1000 / 1333;
@@ -352,7 +356,16 @@ static int ada4250_probe(struct spi_device *spi)
 
 	dev = iio_priv(indio_dev);
 	dev->regmap = regmap;
-	dev->avdd_v = 5;
+
+	dev->reg = devm_regulator_get(&spi->dev, "avdd");
+	if (IS_ERR(dev->reg))
+		return PTR_ERR(dev->reg);
+
+	ret = regulator_enable(dev->reg);
+	if (ret < 0) {
+		dev_err(&spi->dev, "Failed to enable specified AVDD supply\n");
+		return ret;
+	}
 
 	indio_dev->dev.parent = &spi->dev;
 	indio_dev->info = &ada4250_info;
@@ -376,8 +389,11 @@ static int ada4250_probe(struct spi_device *spi)
 static int ada4250_remove(struct spi_device *spi)
 {
 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+	struct ada4250 *dev = iio_priv(indio_dev);
 
 	iio_device_unregister(indio_dev);
+
+	regulator_disable(dev->reg);
 
 	return 0;
 }
