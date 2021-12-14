@@ -64,3 +64,4 @@ obj-$(CONFIG_XILINX_FLEX_PM)	+= xilinx_flex_pm.o
 obj-$(CONFIG_XILINX_TRAFGEN)	+= xilinx_trafgen.o
 obj-$(CONFIG_XILINX_JESD204B)	+= jesd204b/
 obj-$(CONFIG_XILINX_AIE)	+= xilinx-ai-engine/
+obj-$(CONFIG_CEL_LDPC_BER_TESTER)	+= axi-ldpc-ber-tester.o
