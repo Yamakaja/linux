@@ -632,6 +632,7 @@ static int xsdfec_table_write(struct xsdfec_dev *xsdfec, u32 offset,
 		if (res > 0)
 			unpin_user_pages(pages, res);
 
+		dev_err(xsdfec->dev, "Failed to map pages, src_ptr: 0x%08llx!\n", (u64) src_ptr);
 		return -EINVAL;
 	}
 
@@ -645,6 +646,7 @@ static int xsdfec_table_write(struct xsdfec_dev *xsdfec, u32 offset,
 			reg++;
 		} while ((reg < len) &&
 			 ((reg * XSDFEC_REG_WIDTH_JUMP) % PAGE_SIZE));
+		kunmap(pages[i]);
 		unpin_user_page(pages[i]);
 	}
 	return 0;
@@ -706,18 +708,27 @@ static int xsdfec_add_ldpc(struct xsdfec_dev *xsdfec, void __user *arg)
 	if (ldpc->nlayers % 4)
 		n++;
 
+#ifdef DEBUG
+	dev_info(xsdfec->dev, "Writing SC table\n");
+#endif
 	ret = xsdfec_table_write(xsdfec, ldpc->sc_off, ldpc->sc_table, n,
 				 XSDFEC_LDPC_SC_TABLE_ADDR_BASE,
 				 XSDFEC_SC_TABLE_DEPTH);
 	if (ret < 0)
 		goto err_out;
 
+#ifdef DEBUG
+	dev_info(xsdfec->dev, "Writing LA table\n");
+#endif
 	ret = xsdfec_table_write(xsdfec, 4 * ldpc->la_off, ldpc->la_table,
 				 ldpc->nlayers, XSDFEC_LDPC_LA_TABLE_ADDR_BASE,
 				 XSDFEC_LA_TABLE_DEPTH);
 	if (ret < 0)
 		goto err_out;
 
+#ifdef DEBUG
+	dev_info(xsdfec->dev, "Writing QC table\n");
+#endif
 	ret = xsdfec_table_write(xsdfec, 4 * ldpc->qc_off, ldpc->qc_table,
 				 ldpc->nqc, XSDFEC_LDPC_QC_TABLE_ADDR_BASE,
 				 XSDFEC_QC_TABLE_DEPTH);
@@ -965,6 +976,10 @@ static long xsdfec_dev_ioctl(struct file *fptr, unsigned int cmd,
 		if (!arg)
 			return rval;
 	}
+
+#ifdef DEBUG
+	dev_info(xsdfec->dev, "Entering ioctl: 0x%08x, XSDFEC_ADD_LDPC_CODE_PARAMS: 0x%08lx\n", cmd, XSDFEC_ADD_LDPC_CODE_PARAMS);
+#endif
 
 	switch (cmd) {
 	case XSDFEC_START_DEV:
