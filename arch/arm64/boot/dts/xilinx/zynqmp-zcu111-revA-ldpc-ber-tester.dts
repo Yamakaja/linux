@@ -1,0 +1,151 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2021 David Winter
+ */
+
+#include "zynqmp-zcu111-revA.dts"
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	core_clk: oscillator {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <666000000>;
+		clock-output-names = "core-clk";
+	};
+
+	intf_clk: oscillator {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <400000000>;
+		clock-output-names = "intf-clk";
+	};
+
+	fpga_axi: fpga-axi@0 {
+		interrupt-parent = <&gic>;
+		compatible = "simple-bus";
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+		ranges = <0 0 0 0xffffffff>;
+
+		axi_sysid_0: axi-sysid-0@85000000 {
+			compatible = "adi,axi-sysid-1.00.a";
+			reg = <0x85000000 0x10000>;
+		};
+
+		sd_fec_0: sd-fec@84000000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84000000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 104 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		sd_fec_1: sd-fec@84100000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84100000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 105 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		sd_fec_2: sd-fec@84200000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84200000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 106 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		sd_fec_3: sd-fec@84300000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84300000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 107 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		sd_fec_4: sd-fec@84400000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84400000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 108 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		sd_fec_5: sd-fec@84500000 {
+			compatible = "xlnx,sd-fec-1.1";
+			reg = <0x84500000 0x40000>;
+			clocks = <&core_clk>, <&zynqmp_clk PL0_REF>, <&intf_clk>, <&intf_clk>, <&intf_clk>, <&intf_clk>;
+			clock-names = "core_clk", "s_axi_aclk", "s_axis_ctrl_aclk", "s_axis_din_aclk", "m_axis_status_aclk", "m_axis_dout_aclk";
+			xlnx,sdfec-code = "ldpc";
+			xlnx,sdfec-din-words = <0>;
+			xlnx,sdfec-din-width = <1>;
+			xlnx,sdfec-dout-words = <0>;
+			xlnx,sdfec-dout-width = <1>;
+			interrupts = <0 109 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_0: axi-ldpc-ber-tester@84800000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84800000 0x01000>;
+			interrupts = <0 89 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_1: axi-ldpc-ber-tester@84900000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84900000 0x01000>;
+			interrupts = <0 90 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_2: axi-ldpc-ber-tester@84a00000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84a00000 0x01000>;
+			interrupts = <0 91 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_3: axi-ldpc-ber-tester@84b00000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84b00000 0x01000>;
+			interrupts = <0 92 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_4: axi-ldpc-ber-tester@84c00000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84c00000 0x01000>;
+			interrupts = <0 93 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		ber_tester_5: axi-ldpc-ber-tester@84d00000 {
+			compatible = "cel,axi-ldpc-ber-tester-1.00.a";
+			reg = <0x84d00000 0x01000>;
+			interrupts = <0 94 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+	};
+};
